@@ -1,4 +1,6 @@
 docker pull joomla:4.0.5-apache
+docker build -f ../Dockerfiles/Dockerfile.joomla -t fomindn/joomla:4.0.5-apache .
+docker push fomindn/joomla:4.0.5-apache
 docker volume create webs-joomla-scode
 docker run -tid \
 --rm \
