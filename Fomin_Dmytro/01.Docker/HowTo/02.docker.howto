@@ -26,6 +26,30 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o 
 # Установка пакетов Docker-а:
 sudo apt-get update && sudo apt-get -f install docker-ce docker-ce-cli containerd.io
 
+# Установка пакетов Docker-credential-helpers для безопасного хранения локальных паролей авторизации
+sudo apt -f install pass golang-docker-credential-helpers gpg
+# Генерируем ключи для шифрования. Выбираем все значения по умолчанию. Защиту паролем можно не устанавливать
+gpg --full-gen-key
+# Инициализируем хранилище pass для хранения данных авторизации. GPG_ID - это идентификатор сгенерированного ключа,
+# он указывается в сообщении после генерации ключа:
+# pub   rsa3072 2022-01-31 [SC]
+#       47808B48C957576FA574470DE3898ED2CB38753D    <=== Это GPG_ID
+pass init GPG_ID
+# Разлогиниваемся из docker:
+docker logout
+# Вносим изменения в файл ~/.docker/config.json :
+cat <<EOF > ~/.docker/config.json
+{
+    "credsStore":"pass"
+}
+EOF
+# Залогиниваемся в docker, указывая свой логин и ТОКЕН с docker-hub:
+docker login
+# Вывод паролей в хранилище
+pass list
+# Вывод пароля в дешифрованном виде, где pass-name - имя записи пароля в хранилище:
+pass show <pass-name>
+
 # Добавляем пользователя fomindn в системную группу docker для выполнения docker-комманд не от имени root-а, 
 # а с правами простого пользователя
 sudo usermod -aG docker fomindn
