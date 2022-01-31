@@ -1,0 +1,12 @@
+docker pull httpd:2.4.51-bullseye
+docker volume create webs-pub-html
+docker run -tid \
+--rm \
+--name apache \
+-h apache \
+-p 80:80 \
+-v webs-pub-html:/usr/local/apache2/htdocs \
+httpd:2.4.51-bullseye
+docker cp ~/devops/01.Docker/Source-code/index.html apache:/var/www/html/index.html
+docker cp ~/devops/01.Docker/Source-code/index.php apache:/var/www/html/index.php
+docker logs apache
