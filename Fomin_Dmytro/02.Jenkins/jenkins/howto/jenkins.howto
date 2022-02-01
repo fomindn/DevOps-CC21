@@ -21,7 +21,7 @@
  
  # Export environments
  export JENKINS_USER_ID=jenkins
- export JENKINS_TOKEN_API=v2v23v2v244b35n4n5n4n2n32n4n34n35n35n3
+ export JENKINS_API_TOKEN=v2v23v2v244b35n4n5n4n2n32n4n34n35n35n3
  
  # View our environments
  env | grep JENKINS
