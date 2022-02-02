@@ -42,7 +42,7 @@ pipeline {
             steps{
                 // Login to Docker Hub
                 sh 'docker login -u $DHUB_USR -p $DHUB_PSW'
-                sh 'docker push ${env.DKR_IMG_NAME}'
+                sh "docker push ${env.DKR_IMG_NAME}"
             }
         }
 /*        
