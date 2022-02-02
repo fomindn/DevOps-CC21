@@ -21,12 +21,11 @@ pipeline {
                     // Export latest Jenkins plugins list to plugins.txt file
                     echo "Export installed latest Jenkins plugins list to plugins.txt file"
                     sh 'curl -sSL "http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | perl -pe \'s/.*?<shortName>([\\w-]+).*?<version>([^<]+)()(<\\/\\w+>)+/\\1 \\2\\n/g\'|sed \'s/ /:/\' | sort > plugins.txt'
-                    
                 }
-            }
-            steps {
-                    //Building Docker image with Jenkins
-                    dockerImage = docker.build DKR_IMG_NAME
+            
+                //Building Docker image with Jenkins
+                dockerImage = docker.build DKR_IMG_NAME
+
             }
         }
         // Stage #2 - Test builded docker image 
