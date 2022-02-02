@@ -1,10 +1,10 @@
 pipeline {
     agent any
-
+/*
     environment {
 //        DOCKERHUB_CREDENTIALS = credentials('hnom_docker-hub')
     }
-
+*/
     stages {
         // Stage #1 - Build docker image with Dockerfile help
         stage('Build') {
