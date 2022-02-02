@@ -9,8 +9,9 @@ pipeline {
         // Stage #1 - Build docker image with Dockerfile help
         stage('Build') {
             steps {
-                dir("Fomin_Dmytro/02.Jenkins/jenkins/")
-                sh "ls -lh" 
+                dir("Fomin_Dmytro/02.Jenkins/jenkins/") {
+                    sh "ls -lh" 
+                }
             }
         }
         // Stage #2 - Test builded docker image 
