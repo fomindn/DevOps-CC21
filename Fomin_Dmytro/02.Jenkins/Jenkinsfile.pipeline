@@ -10,7 +10,10 @@ pipeline {
         stage('Build') {
             environment {
                 JENK=credentials('Jenkins-user')
-                DKR_IMG_NAME="fomindn/jankins"
+                DKR_IMG="fomindn/jankins"
+                DKR_IMG_TAG="v$BUILD_NUMBER"
+                DKR_IMG_NAME="${env.DKR_IMG}:${env.DKR_IMG_TAG}"
+
             }
             steps {
                 dir("Fomin_Dmytro/02.Jenkins/jenkins/") {
@@ -19,10 +22,11 @@ pipeline {
                     echo "Export installed latest Jenkins plugins list to plugins.txt file"
                     sh 'curl -sSL "http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | perl -pe \'s/.*?<shortName>([\\w-]+).*?<version>([^<]+)()(<\\/\\w+>)+/\\1 \\2\\n/g\'|sed \'s/ /:/\' | sort > plugins.txt'
                     
-                    //Building Docker image with Jenkins
-                    dockerImage = docker.build DKR_IMG_NAME + ":$BUILD_NUMBER"
-                    //docker build -t $AUTHOR/$IMG_NAME .
                 }
+            }
+            steps {
+                    //Building Docker image with Jenkins
+                    dockerImage = docker.build DKR_IMG_NAME
             }
         }
         // Stage #2 - Test builded docker image 
