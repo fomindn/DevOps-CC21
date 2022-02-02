@@ -15,7 +15,7 @@ pipeline {
                 dir("Fomin_Dmytro/02.Jenkins/jenkins/") {
                     // Export latest Jenkins plugins list to plugins.txt file
                     //sh "curl -sSL &quot;http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&amp;xpath=/*/*/shortName|/*/*/version&amp;wrapper=plugins&quot; | perl -pe &apos;s/.*?&lt;shortName&gt;([\\w-]+).*?&lt;version&gt;([^&lt;]+)()(&lt;\\/\\w+&gt;)+/\\1 \\2\\n/g&apos;|sed &apos;s/ /:/&apos; | sort"  //&gt; plugins.txt
-                    sh 'curl -sSL "http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | perl -pe \'s/.*?<shortName>([\\w-]+).*?<version>([^<]+)()(<\/\w+>)+/\1 \2\n/g\'|sed \'s/ /:/\' | sort'
+                    sh 'curl -sSL "http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | perl -pe \'s/.*?<shortName>([\\w-]+).*?<version>([^<]+)()(<\\/\\w+>)+/\\1 \\2\\n/g\'|sed \'s/ /:/\' | sort'
                 }
             }
         }
