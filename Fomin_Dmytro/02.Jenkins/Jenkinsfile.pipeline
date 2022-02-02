@@ -44,12 +44,14 @@ pipeline {
                 sh "docker login -u $DHUB_USR -p $DHUB_PSW"
             }
         }
+/*        
         // Stage #4 - Deploy docker image
         stage('Deploy') {
             steps {
 //                sh 'docker-compose up -d'
             }
         }
+*/        
     }
     post {
         always {
