@@ -23,7 +23,7 @@ pipeline {
                     sh 'curl -sSL "http://$JENK_USR:$JENK_PSW@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | perl -pe \'s/.*?<shortName>([\\w-]+).*?<version>([^<]+)()(<\\/\\w+>)+/\\1 \\2\\n/g\'|sed \'s/ /:/\' | sort > plugins.txt'
                 
                     //Building Docker image with Jenkins
-                    sh 'docker build -t DKR_IMG_NAME .'
+                    sh "docker build -t ${env.DKR_IMG_NAME} ."
                 
                 }
 
