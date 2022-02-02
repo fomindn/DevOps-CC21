@@ -1,12 +1,40 @@
 pipeline {
     agent any
 
+    environment {
+//        DOCKERHUB_CREDENTIALS = credentials('hnom_docker-hub')
+    }
+
     stages {
-        stage('Hello') {
+        // Stage #1 - Build docker image with Dockerfile help
+        stage('Build') {
             steps {
-                echo "${pwd()}"
+                pwd
+                ls -lh
+            }
+        }
+        // Stage #2 - Test builded docker image 
+        stage('Test') {
+            steps {
+//                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        // Stage #3 - Push docker image to the registry Docker Hub
+        stage('Push'){
+            steps{
+//                sh 'docker push hnom/devopscc_webserver:latest'
+            }
+        }
+        // Stage #4 - Deploy docker image
+        stage('Deploy') {
+            steps {
+//                sh 'docker-compose up -d'
             }
         }
     }
+    post {
+        always {
+//            sh 'docker logout'
+        }
+    }
 }
-
