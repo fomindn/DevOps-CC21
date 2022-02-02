@@ -1,19 +1,17 @@
 pipeline {
     agent any
-/*
+
     environment {
-//        DOCKERHUB_CREDENTIALS = credentials('hnom_docker-hub')
+        DKR_IMG="fomindn/jenkins"
+        DKR_IMG_TAG="v$BUILD_NUMBER"
+        DKR_IMG_NAME="${env.DKR_IMG}:${env.DKR_IMG_TAG}"
     }
-*/
+
     stages {
         // Stage #1 - Build docker image with Dockerfile help
         stage('Build') {
             environment {
                 JENK=credentials('Jenkins-user')
-                DKR_IMG="fomindn/jankins"
-                DKR_IMG_TAG="v$BUILD_NUMBER"
-                DKR_IMG_NAME="${env.DKR_IMG}:${env.DKR_IMG_TAG}"
-
             }
             steps {
                 dir("Fomin_Dmytro/02.Jenkins/jenkins/") {
@@ -30,16 +28,20 @@ pipeline {
             }
         }
         // Stage #2 - Test builded docker image 
-/*        stage('Test') {
+        stage('Test') {
             steps {
-//                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                echo "Here can be implemented different Docker image tests."
             }
         }
         
         // Stage #3 - Push docker image to the registry Docker Hub
         stage('Push'){
+            environment {
+                DHUB=credentials('DockerHub-token')
+            }
             steps{
-//                sh 'docker push hnom/devopscc_webserver:latest'
+                
+                sh "docker login -u $DHUB_USR -p $DHUB_PSW"
             }
         }
         // Stage #4 - Deploy docker image
@@ -51,8 +53,7 @@ pipeline {
     }
     post {
         always {
-//            sh 'docker logout'
+            sh 'docker logout'
         }
-*/         
-    }   
+    }
 }
