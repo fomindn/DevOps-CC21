@@ -9,16 +9,17 @@ pipeline {
         // Stage #1 - Build docker image with Dockerfile help
         stage('Build') {
             steps {
-                pwd
-                ls -lh
+                dir("Fomin_Dmytro/02.Jenkins/jenkins/")
+                sh "ls -lh" 
             }
         }
         // Stage #2 - Test builded docker image 
-        stage('Test') {
+/*        stage('Test') {
             steps {
 //                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
+        
         // Stage #3 - Push docker image to the registry Docker Hub
         stage('Push'){
             steps{
@@ -37,4 +38,5 @@ pipeline {
 //            sh 'docker logout'
         }
     }
+*/    
 }
