@@ -58,7 +58,9 @@ pipeline {
                 sh 'docker stop joomla mysql-db pma || true'
                 sh 'docker rm joomla mysql-db pma || true'
                 sh 'docker network create mysql-net || true'
-                sh './joomla-docker.sh 1'
+                dir("Fomin_Dmytro/02.Jenkins/joomla-webs/") {
+                  sh './joomla-docker.sh 1'
+                }
             }
         }
 
