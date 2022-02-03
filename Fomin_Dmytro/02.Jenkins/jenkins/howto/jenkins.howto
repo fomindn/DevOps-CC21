@@ -38,3 +38,17 @@
 # Список установленных плагинов в алфавитном порядке
 curl -sSL "http://admin:admin@localhost:8080/pluginManager/api/xml?depth=1&xpath=/*/*/shortName|/*/*/version&wrapper=plugins" | \
 perl -pe 's/.*?<shortName>([\w-]+).*?<version>([^<]+)()(<\/\w+>)+/\1 \2\n/g'|sed 's/ /:/' | sort
+
+#### Мега крутая и важная вещь!!! Экспорт/Импорт credentials в Jenkins!!! ####
+export JENKINS_USER_ID=jenkins
+export JENKINS_API_TOKEN=v2v23v2v244b35n4n5n4n2n32n4n34n35n35n3
+export JENKINS_SERVER=http://localhost:8080/
+export NEW_JENKINS_SERVER=http://localhost:9090/
+export NEW_JENKINS_USER_ID=jenkins
+export NEW_JENKINS_API_TOKEN=w4w43v2v123b35n4n5n4n2n4564n34n35n9999
+# Экспорт со старого Jenkins credentials
+java -jar jenkins-cli.jar -noCertificateCheck -s $JENKINS_SERVER -auth $JENKINS_USER_ID:$JENKINS_API_TOKEN list-credentials-as-xml "system::system::jenkins" > /tmp/jenkins_credentials.xml
+# Импорт credentials в новый Jenkins
+java -jar jenkins-cli.jar -noCertificateCheck -s $NEW_JENKINS_SERVER -auth $NEW_JENKINS_USER_ID:$NEW_JENKINS_API_TOKEN import-credentials-as-xml "system::system::jenkins" < /tmp/jenkins_credentials.xml
+# Удаляем временный файл с credentials
+rm -f /tmp/jenkins_credentials.xml
