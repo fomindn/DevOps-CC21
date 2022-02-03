@@ -19,13 +19,13 @@ pipeline {
             steps {
                 dir("Fomin_Dmytro/02.Jenkins/joomla-webs/") {
                     //Building Docker image with Joomla
-                    sh "docker build -t ${env.J_DKR_IMG_NM} ."
+                    sh "docker build -f Dockerfiles/Dockerfile.joomla -t ${env.J_DKR_IMG_NM} ."
 
                     //Building Docker image with MySQL
-                    sh "docker build -t ${env.M_DKR_IMG_NM} ."
+                    sh "docker build -f Dockerfiles/Dockerfile.mysql -t ${env.M_DKR_IMG_NM} ."
 
                     //Building Docker image with phpMyAdmin
-                    sh "docker build -t ${env.P_DKR_IMG_NM} ."
+                    sh "docker build -f Dockerfiles/Dockerfile.pma -t ${env.P_DKR_IMG_NM} ."
                 }
             }
         }
