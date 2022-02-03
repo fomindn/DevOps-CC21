@@ -17,17 +17,19 @@ else
 fi
 
 case $choise in
-    1)  #docker-compose -f joomla-docker-compose.yml up -d
-        echo 1
+    1)  docker run -tid --rm --name mysql-db -h mysql-db -p 3306:3306 --net mysql-net -v  webs-mysql-db:/var/lib/mysql \
+        -e MYSQL_DATABASE=joomla-db --env-file=.env/mysql.env mysql:5.7.36
+
+        docker run -tid --rm --name pma -h pma -p 85:80 --net mysql-net --env-file=.env/pma.env -e PMA_HOST=mysql-db \
+        phpmyadmin:5.1.1-apache
+
+        docker run -tid --rm --name joomla -h joomla -p 80:80 --net mysql-net -v webs-joomla-scode:/var/www/html \
+        -e JOOMLA_DB_HOST=mysql-db --env-file=.env/joomla.env joomla:4.0.5-apache
     ;;
-    2)  #docker-compose -f joomla-docker-compose.yml stop
-        echo 2
+    2)  docker stop joomla pma mysql-db || true
     ;;
-    q)  #exit 0
-        echo q
+    q)  exit 0
     ;;
-    *)  #exit 1
-        echo "Something else"
+    *)  exit 1
     ;;
 esac
-

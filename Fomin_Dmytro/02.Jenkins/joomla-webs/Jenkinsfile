@@ -56,8 +56,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh 'docker stop joomla mysql-db pma || true'
-                sh 'docker rm joomla mysql-db pma || true' 
-                sh 'docker-compose -f joomla-docker-compose.yml up -d'
+                sh 'docker rm joomla mysql-db pma || true'
+                sh 'docker network create mysql-net || true'
+                sh './joomla-docker.sh 1'
             }
         }
 
