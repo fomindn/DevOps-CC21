@@ -51,14 +51,16 @@ pipeline {
                 sh "docker push ${env.P_DKR_IMG_NM}"
             }
         }
-/*        
+
         // Stage #4 - Deploy docker image
         stage('Deploy') {
             steps {
-//                sh 'docker-compose up -d'
+                sh 'docker stop joomla mysql-db pma'
+                sh 'docker rm joomla mysql-db pma'
+                sh 'docker-compose -f joomla-docker-compose.yml up -d'
             }
         }
-*/        
+
     }
     post {
         always {

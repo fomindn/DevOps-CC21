@@ -1,7 +1,10 @@
 version: '3.3'
 services:
   mysql-db:
-    image: mysql:5.7.36
+    build:
+      context: '.'
+      dockerfile: 'Dockerfiles/Dockerfile.mysql'
+    image: fomindn/mysql:5.7.36
     environment:
       - MYSQL_DATABASE=joomla-db
     env_file:
@@ -15,7 +18,10 @@ services:
     volumes:
       - webs-mysql-db:/var/lib/mysql:rw
   pma:
-    image:  phpmyadmin:5.1.1-apache
+    build:
+      context: '.'
+      dockerfile: 'Dockerfiles/Dockerfile.pma'
+    image:  fomindn/pma:5.1.1
     environment:
       - PMA_HOST=mysql-db
     env_file:
@@ -27,21 +33,14 @@ services:
     networks:
       - mysql-net
   joomla:
-    image: joomla:4.0.5-apache
+    build:
+      context: '.'
+      dockerfile: 'Dockerfiles/Dockerfile.joomla'
+    image: fomindn/joomla:4.0.5
     environment:
       - JOOMLA_DB_HOST=mysql-db
     env_file:
       - .env/joomla.env
-#    build:
-#      context:
-#      dockerfile: 
-#      cache_from:
-#      args:
-#        buildno:
-#        gitcommithash:
-#      labels:
-#        - 
-#      network:
     container_name: joomla
     hostname: joomla
     depends_on:
