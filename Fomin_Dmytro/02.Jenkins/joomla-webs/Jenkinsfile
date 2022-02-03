@@ -60,16 +60,16 @@ pipeline {
                 sh 'docker network create mysql-net || true'
                 dir("Fomin_Dmytro/02.Jenkins/joomla-webs/") {
                   // Start MySQL docker file
-                  sh 'docker run -tid --rm --name mysql-db -h mysql-db -p 3306:3306 --net mysql-net -v  webs-mysql-db:/var/lib/mysql \
-                      -e MYSQL_DATABASE=joomla-db --env-file=.env/mysql.env ${env.M_DKR_IMG_NM}'
+                  sh "docker run -tid --rm --name mysql-db -h mysql-db -p 3306:3306 --net mysql-net -v  webs-mysql-db:/var/lib/mysql \
+                      -e MYSQL_DATABASE=joomla-db --env-file=.env/mysql.env ${env.M_DKR_IMG_NM}"
                   
                   // Start PMA docker file
-                  sh 'docker run -tid --rm --name pma -h pma -p 85:80 --net mysql-net --env-file=.env/pma.env -e PMA_HOST=mysql-db \
-                      ${env.P_DKR_IMG_NM}'
+                  sh "docker run -tid --rm --name pma -h pma -p 85:80 --net mysql-net --env-file=.env/pma.env -e PMA_HOST=mysql-db \
+                      ${env.P_DKR_IMG_NM}"
 
                   // Start Joomla docker file
-                  sh 'docker run -tid --rm --name joomla -h joomla -p 80:80 --net mysql-net -v webs-joomla-scode:/var/www/html \
-                      -e JOOMLA_DB_HOST=mysql-db --env-file=.env/joomla.env ${env.J_DKR_IMG_NM}'
+                  sh "docker run -tid --rm --name joomla -h joomla -p 80:80 --net mysql-net -v webs-joomla-scode:/var/www/html \
+                      -e JOOMLA_DB_HOST=mysql-db --env-file=.env/joomla.env ${env.J_DKR_IMG_NM}"
                 }
             }
         }
