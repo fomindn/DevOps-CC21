@@ -1,54 +1,68 @@
 /*
-Наши пайплайны будут состоять из следующих шагов:
-
-1. Build. Компиляция проекта
-2. Test. Выполнение тестов. В проекте у нас только модульные тесты, но с помощью Maven нетрудно сделать отдельный шаг и для интеграционных тестов
-3. Package. Сборка jar-архива
-4. Push Images. Создание Docker-образов и их загрузка в реестр образов. Мы будем пушить два образа — с тегом latest и конкретной версией
-5. Trigger Kubernetes. Команда Kubernetes обновить Docker-образ в подах кластера
-
+    THIS FILE INTENDED FOR JOOMLA WEB-SERVER DOCKER IMAGE BUILD AND PUSHING IT IN DOCKER HUB REGISTRY
  */
+pipeline {
+    agent any
 
- /*
- pipeline {
-  agent none
-  options {
-  skipStagesAfterUnstable()
-  skipDefaultCheckout()
-}
-  environment {
-  IMAGE_BASE = 'anshelen/microservices-backend'
-  IMAGE_TAG = "v$BUILD_NUMBER"
-  IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
-  IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
-  DOCKERFILE_NAME = "Dockerfile-packaged"
-}
-  stages {
-    stage("Prepare container") {
-      agent {
-        docker {
-          image 'openjdk:11.0.5-slim'
-          args '-v $HOME/.m2:/root/.m2'
+    environment {
+      J_DKR_IMG_NM="fomindn/joomla:4.0.5"
+      M_DKR_IMG_NM="fomindn/mysql:5.7.36"
+      P_DKR_IMG_NM="fomindn/pma:5.1.1"
+    }
+
+    stages {
+        // Stage #1 - Build docker images with Dockerfiles help
+        stage('Build') {
+            environment {
+                JENK=credentials('Jenkins-user')
+            }
+            steps {
+                dir("Fomin_Dmytro/02.Jenkins/joomla-webs/") {
+                    //Building Docker image with Joomla
+                    sh "docker build -t ${env.J_DKR_IMG_NM} ."
+
+                    //Building Docker image with MySQL
+                    sh "docker build -t ${env.M_DKR_IMG_NM} ."
+
+                    //Building Docker image with phpMyAdmin
+                    sh "docker build -t ${env.P_DKR_IMG_NM} ."
+                }
+            }
         }
-      }
-      stages {
-        stage('Build') { ... }
-        stage('Test') { ... }
-        stage('Package') { ... }
-      }
-    }
+        // Stage #2 - Test builded docker image 
+        stage('Test') {
+            steps {
+                echo "Here can be implemented different Docker images tests."
+            }
+        }
+        
+        // Stage #3 - Push docker images to the registry Docker Hub
+        stage('Push'){
+            environment {
+                DHUB=credentials('DockerHub-token')
+            }
+            steps{
+                // Login to Docker Hub
+                sh 'docker login -u $DHUB_USR -p $DHUB_PSW'
 
-    stage('Push images') {
-      agent any
-      when { branch 'master' }
-      steps { ... }
+                // Push images to the registry Docekr Hub
+                sh "docker push ${env.J_DKR_IMG_NM}"
+                sh "docker push ${env.M_DKR_IMG_NM}"
+                sh "docker push ${env.P_DKR_IMG_NM}"
+            }
+        }
+/*        
+        // Stage #4 - Deploy docker image
+        stage('Deploy') {
+            steps {
+//                sh 'docker-compose up -d'
+            }
+        }
+*/        
     }
-
-    stage('Trigger kubernetes') {
-      agent any
-      when { branch 'master' }
-      steps { ... }
+    post {
+        always {
+            sh 'docker logout'
+        }
     }
-  }
 }
-  */
