@@ -73,7 +73,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'joomla.env', variable: 'JOOMLA_ENV')]) {
                   // Start Joomla docker file
                   sh "docker run -tid --rm --name joomla -h joomla -p 80:80 --net mysql-net -v webs-joomla-scode:/var/www/html \
-                      -e JOOMLA_DB_HOST=mysql-db --env-file=JOOMLA_ENV ${env.J_DKR_IMG_NM}"
+                      -e JOOMLA_DB_HOST=mysql-db --env-file=\$JOOMLA_ENV ${env.J_DKR_IMG_NM}"
                 }
             }
         }
