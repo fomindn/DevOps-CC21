@@ -1,0 +1,195 @@
+# Ubuntu 20.04 LTS
+
+# Установка драйвера KVM2 - Linux KVM (Kernel-based Virtual Machine) driver
+# https://minikube.sigs.k8s.io/docs/drivers/kvm2/
+
+# Для установки утилиты kvm-ok (проверка возможности виртуализации) необходимо установить:
+sudo apt -f install cpu-checker
+
+# Проверяем или есть возможность виртуализации:
+kvm-ok
+# Вывод комманды:
+# INFO: /dev/kvm exists
+# KVM acceleration can be used
+
+# Инсталлируем необходимые пакеты для установки KVM 
+sudo apt -f install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-viewer
+
+# Добавляем пользователя в группы libvirt и kvm
+sudo adduser `id -un` libvirt
+sudo adduser `id -un` kvm
+
+# Проверяем корректность установки KVM
+virsh list --all
+# Вывод:
+#  Id   Name   State
+# --------------------
+
+# Проверяем правильность установленных прав на сокет-файл
+sudo ls -la /var/run/libvirt/libvirt-sock
+# Вывод:
+# srw-rw---- 1 root libvirt 0 янв 22 16:10 /var/run/libvirt/libvirt-sock
+
+# Проверяем, что libvirt настроен правильно и не содержит ошибок:
+virt-host-validate
+# Вывод:
+#  QEMU: Checking for hardware virtualization                                 : PASS
+#  QEMU: Checking if device /dev/kvm exists                                   : PASS
+#  QEMU: Checking if device /dev/kvm is accessible                            : PASS
+#  QEMU: Checking if device /dev/vhost-net exists                             : PASS
+#  QEMU: Checking if device /dev/net/tun exists                               : PASS
+#  QEMU: Checking for cgroup 'cpu' controller support                         : PASS
+#  QEMU: Checking for cgroup 'cpuacct' controller support                     : PASS
+#  QEMU: Checking for cgroup 'cpuset' controller support                      : PASS
+#  QEMU: Checking for cgroup 'memory' controller support                      : PASS
+#  QEMU: Checking for cgroup 'devices' controller support                     : PASS
+#  QEMU: Checking for cgroup 'blkio' controller support                       : PASS
+#  QEMU: Checking for device assignment IOMMU support                         : WARN (No ACPI DMAR table found, IOMMU either disabled in BIOS or not supported by this hardware platform)
+#  QEMU: Checking for secure guest support                                    : WARN (Unknown if this platform has Secure Guest support)
+#   LXC: Checking for Linux >= 2.6.26                                         : PASS
+#   LXC: Checking for namespace ipc                                           : PASS
+#   LXC: Checking for namespace mnt                                           : PASS
+#   LXC: Checking for namespace pid                                           : PASS
+#   LXC: Checking for namespace uts                                           : PASS
+#   LXC: Checking for namespace net                                           : PASS
+#   LXC: Checking for namespace user                                          : PASS
+#   LXC: Checking for cgroup 'cpu' controller support                         : PASS
+#   LXC: Checking for cgroup 'cpuacct' controller support                     : PASS
+#   LXC: Checking for cgroup 'cpuset' controller support                      : PASS
+#   LXC: Checking for cgroup 'memory' controller support                      : PASS
+#   LXC: Checking for cgroup 'devices' controller support                     : PASS
+#   LXC: Checking for cgroup 'freezer' controller support                     : PASS
+#   LXC: Checking for cgroup 'blkio' controller support                       : PASS
+#   LXC: Checking if device /sys/fs/fuse/connections exists                   : PASS
+
+# Инсталируем minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i minikube_latest_amd64.deb
+
+# Инсталируем minikube
+minikube start
+
+# Устанавливаем kubectl
+minikube kubectl -- get pods -A
+
+# Делаем алиас на комманду kubectl
+alias kubectl="minikube kubectl --"
+
+# Для получения дополнительной информации о состоянии вашего кластера minikube включает панель мониторинга Kubernetes
+minikube dashboard
+
+# Создаем master кластер с использованием драйвера Docker
+minikube start --driver=docker
+
+# Выполняем комманду вывода списка доступных нод в кластере
+kubectl get nodes
+# Вывод:
+# NAME       STATUS   ROLES                  AGE   VERSION
+# minikube   Ready    control-plane,master   42m   v1.23.1
+
+# Комманда вывода текущего статуса кластера
+minikube status
+# Вывод:
+# minikube
+# type: Control Plane
+# host: Running
+# kubelet: Running
+# apiserver: Running
+# kubeconfig: Configured
+
+# Информация о версии серверной и клиентской части Kubernetes
+kubectl version
+# Вывод:
+# Client Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.1", GitCommit:"86ec240af8cbd1b60bcc4c03c20da9b98005b92e", 
+# GitTreeState:"clean", BuildDate:"2021-12-16T11:41:01Z", GoVersion:"go1.17.5", Compiler:"gc", Platform:"linux/amd64"}
+# Server Version: version.Info{Major:"1", Minor:"23", GitVersion:"v1.23.1", GitCommit:"86ec240af8cbd1b60bcc4c03c20da9b98005b92e", 
+# GitTreeState:"clean", BuildDate:"2021-12-16T11:34:54Z", GoVersion:"go1.17.5", Compiler:"gc", Platform:"linux/amd64"}
+
+# kubectl CLI - for configuring the minikube cluster
+# minikube CLI - for start up/deleting the cluster
+
+# Вывести все поды
+kubectl get pod
+# Вывод:
+# No resources found in default namespace.
+
+# Вывод состава образа контейнера, запущенного в кластере
+kubectl get pods --all-namespaces
+# Вывод:
+NAMESPACE              NAME                                        READY   STATUS    RESTARTS      AGE
+kube-system            coredns-64897985d-znpnq                     1/1     Running   0             37m
+kube-system            etcd-minikube                               1/1     Running   0             37m
+kube-system            kube-apiserver-minikube                     1/1     Running   0             37m
+kube-system            kube-controller-manager-minikube            1/1     Running   0             37m
+kube-system            kube-proxy-gnkll                            1/1     Running   0             37m
+kube-system            kube-scheduler-minikube                     1/1     Running   0             37m
+kube-system            storage-provisioner                         1/1     Running   1 (36m ago)   37m
+kubernetes-dashboard   dashboard-metrics-scraper-58549894f-2j4dm   1/1     Running   0             35m
+kubernetes-dashboard   kubernetes-dashboard-ccd587f44-xptm6        1/1     Running   0             35m
+
+# Вывести все сервисы в пространстве имён:
+kubectl get services
+# Вывод:
+# NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+# kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   56m
+
+# Вывести список всех достуных расширений minikube
+minikube addons list
+
+# Активировать панель управления Kubernetes и получите URL-адрес панели:
+minikube dashboard --url
+
+# Запустить один экземпляр образа из docker-образа с Docker-Hub
+kubectl create deployment k8s-nginx --image=nginx
+# Вывод:
+# deployment.apps/k8s-nginx created
+
+# 
+kubectl get deployment
+# Вывод:
+# NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+# k8s-nginx      1/1     1            1       60s
+
+# Вывести все поды
+kubectl get pod
+# Вывод:
+# NAME                        READY   STATUS             RESTARTS      AGE
+# k8s-nginx-6d779d947c-rnc84     1/1     Running            0          100s
+
+# Вывести лог пода в stdout
+kubectl logs k8s-nginx-6d779d947c-rnc84
+
+# Удаление экземпляров образа
+kubectl delete deployment k8s-mysql-db
+kubectl delete deployment mysql-db
+
+# Слои абстракции конфигурационного файла:
+# Deployment => RepliaSet => Pod => Container
+# 
+# kubectl commands:
+#   kubectl [create | edit | delete] depoloyment [NAME]  - создать/обновить/удалить развертывание с именем NAME
+#   kubectl get [nodes | pod | services | replicaset | deployment]  - вывести доступные ноды/поды/сервисы/инстансы/развертывания
+#   kubectl logs [pod_NAME] - подключиться к STDOUT логов пода с именем pod_NAME
+#   kubectl exec -ti [pod_NAME] -- bin/bash - подключиться к терминальной сессии пода с именем pod_NAME
+#   kubectl describe pod [pod_NAME] - вывести информацию о поде с именем pod_NAME
+#   kubectl [apply | delete] -f [filename] - создать/удалить развертывание по инструкции конфигурационного файла filename.YAML
+
+# Выполнение комманды внутри контейнера
+kubectl exec -it k8s-nginx-6d779d947c-rnc84 -- bin/bash
+
+# Применение развертывания (deployment) и запуска сервиса с использованием конфигурационного файла YAML.
+kubectl apply -f /path/to/yaml/file.yml
+
+# Кодирование секретных данных ключем Base64 для secret-файла
+echo -n 'rootpassword' | base64
+cm9vdHBhc3N3b3Jk
+
+# Создание хранилища secret для файла mysql-secret.yaml
+kubectl apply -f mysql-secret.yaml
+secret/mysql-secret created
+
+# Убеждаемся что secret хранилище созданно
+kubectl get secret
+
+
+
