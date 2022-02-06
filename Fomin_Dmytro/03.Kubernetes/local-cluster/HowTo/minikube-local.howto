@@ -191,5 +191,15 @@ secret/mysql-secret created
 # Убеждаемся что secret хранилище созданно
 kubectl get secret
 
+# создаем развертывание (deployment) для mysql
+kubectl apply -f mysql.yaml
+deployment.apps/mysql-deployment created
+# создаем сервис (service) для mysql с того же файла, что и для развертывания (deployment),
+# поскольку в нем указан также блок описания сервиса
+kubectl apply -f mysql.yaml
+deployment.apps/mysql-deployment unchanged
+service/mysql-service created
+
+
 
 

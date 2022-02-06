@@ -23,7 +23,38 @@ spec:
       containers:
       - name: mysql-db
         image: fomindn/mysql:5.7.36
-        resources:
         ports:
           - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-root-pass
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-user-name
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-user-pass
   ### END Blueprint
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    # внутренний порт сервиса, к которому осуществляется подключение внутри контейнера
+    port: 3306
+    # Порт контейнера по которому осществляется доступ с локльного компьютера
+    targetPort: 3306
+
