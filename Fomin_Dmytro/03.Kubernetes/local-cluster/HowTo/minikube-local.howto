@@ -200,6 +200,32 @@ kubectl apply -f mysql.yaml
 deployment.apps/mysql-deployment unchanged
 service/mysql-service created
 
+# Создание конфигурационной карты (ConfigMap) на основе файла mysql-configmap.yaml
+kubectl apply -f mysql-configmap.yaml
+configmap/mysql-configmap created
 
+# Создание развертывания phpMyAdmin на основе файла конфигурации (блок deployment)
+kubectl apply -f pma.yaml
+deployment.apps/phpmyadmin created
 
+# Создание сервиса (service) phpMyAdmin на основе файла конфигурации (блок service)
+kubectl apply -f pma.yaml
+deployment.apps/phpmyadmin unchanged
+service/pma-service created
+
+# Запустить сервис и открыть в браузере страницу с phpMyAdmin
+minikube service pma-service
+|-----------|-------------|-------------|---------------------------|
+| NAMESPACE |    NAME     | TARGET PORT |            URL            |
+|-----------|-------------|-------------|---------------------------|
+| default   | pma-service |          80 | http://192.168.49.2:30080 |
+|-----------|-------------|-------------|---------------------------|
+
+# Создание развертывания и сервиса Joomla на основе файла конфигурации (joomla.yaml)
+kubectl apply -f joomla.yaml
+deployment.apps/joomla created
+service/joomla-service created
+
+# Запустить сервис и открыть в браузере страницу с Joomla
+minikube service joomla-service
 

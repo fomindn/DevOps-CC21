@@ -26,6 +26,12 @@ spec:
         ports:
           - containerPort: 3306
         env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            # Подключаем внешний файл-секрет (mysql-secret.yaml)
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-db-name
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -44,6 +50,7 @@ spec:
   ### END Blueprint
 
 ---
+# Блок описания сервиса (service)
 apiVersion: v1
 kind: Service
 metadata:
@@ -53,8 +60,10 @@ spec:
     app: mysql
   ports:
   - protocol: TCP
-    # внутренний порт сервиса, к которому осуществляется подключение внутри контейнера
+    # порт сервиса в кластере по которому другие сервисы (приложения) 
+      # кластера осуществляют подключение к данному серверу (сервису)
     port: 3306
-    # Порт контейнера по которому осществляется доступ с локльного компьютера
+    # Порт контейнера по которому приложение внутри контейнера 
+    # принимает запросы из вне
     targetPort: 3306
 
