@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+# What will be doing? Deployment
+kind: Deployment
+metadata:
+  # The name of deployment
+  name: mysql-deployment
+  labels:
+    app: mysql
+# Specification for deployment
+spec:
+  # How many REPLICAS of the PODS will be creating
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  ### Blueprint for the PODS
+  template:
+    metadata:
+      labels:
+        app: mysql
+    # Specification for a pod
+    spec:
+      hostname: mysql-db
+      containers:
+      - name: mysql-db
+        image: fomindn/mysql:5.7.36
+        ports:
+          - containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            # Подключаем внешний файл-секрет (mysql-secret.yaml)
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-db-name
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-root-pass
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-user-name
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-user-pass
+        volumeMounts:
+        - name: local-storage
+          mountPath: /var/lib/mysql
+          subPath: mysql
+      volumes:
+      - name: local-storage
+        persistentVolumeClaim:
+          claimName: local-volume-claim
+  ### END Blueprint
+
+---
+# Блок описания сервиса (service)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    # порт сервиса в кластере по которому другие сервисы (приложения) 
+      # кластера осуществляют подключение к данному серверу (сервису)
+    port: 3306
+    # Порт контейнера по которому приложение внутри контейнера 
+    # принимает запросы из вне
+    targetPort: 3306
+
