@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: mysql-configmap
 data:
+  # по данному имени хоста (mysql-service) выполняется подключение к БД MySQL внутри POD-а
   database_url: mysql-service

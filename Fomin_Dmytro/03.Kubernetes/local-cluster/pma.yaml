@@ -20,6 +20,7 @@ spec:
         app: pma
     # Specification for a pod
     spec:
+      hostname: pma
       containers:
       - name: pma
         image: fomindn/pma:5.1.1
@@ -47,6 +48,8 @@ metadata:
 spec:
   selector:
     app: pma
+  # тип "балансировщик загрузки" (LoadBalancer) обозначает, что данный 
+  # сервис открывается для публичного доступа по IP адресу и порту (nodePort)
   type: LoadBalancer
   ports:
     - protocol: TCP

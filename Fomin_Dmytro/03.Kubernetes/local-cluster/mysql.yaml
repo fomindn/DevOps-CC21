@@ -20,6 +20,7 @@ spec:
         app: mysql
     # Specification for a pod
     spec:
+      hostname: mysql-db
       containers:
       - name: mysql-db
         image: fomindn/mysql:5.7.36
@@ -47,6 +48,14 @@ spec:
             secretKeyRef:
               name: mysql-secret
               key: mysql-user-pass
+        volumeMounts:
+        - name: local-storage
+          mountPath: /var/lib/mysql
+          subPath: mysql
+      volumes:
+      - name: local-storage
+        persistentVolumeClaim:
+          claimName: local-volume-claim
   ### END Blueprint
 
 ---

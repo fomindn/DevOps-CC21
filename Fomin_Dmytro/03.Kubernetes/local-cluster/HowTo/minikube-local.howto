@@ -69,11 +69,22 @@ sudo dpkg -i minikube_latest_amd64.deb
 # Инсталируем minikube
 minikube start
 
-# Устанавливаем kubectl
-minikube kubectl -- get pods -A
+        # Устанавливаем kubectl
+        # minikube kubectl -- get pods -A
 
-# Делаем алиас на комманду kubectl
-alias kubectl="minikube kubectl --"
+        # Делаем алиас на комманду kubectl
+        # alias kubectl="minikube kubectl --"
+
+# Добавляем токен-ключ для пакета apt в Ubuntu
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+# Добавляем новый репозиторий в список репозиториев Ubuntu
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kurbenetes.list
+# Инсталируем утилиты Kubernetes
+sudo apt -f install kubectl kubeadm kubelet
+
+# Добавление автодополнения autocomplete постоянно в командную оболочку bash
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+source ~/.bashrc
 
 # Для получения дополнительной информации о состоянии вашего кластера minikube включает панель мониторинга Kubernetes
 minikube dashboard
@@ -144,7 +155,7 @@ kubectl create deployment k8s-nginx --image=nginx
 # Вывод:
 # deployment.apps/k8s-nginx created
 
-# 
+# Список всех развертываний:
 kubectl get deployment
 # Вывод:
 # NAME       READY   UP-TO-DATE   AVAILABLE   AGE
@@ -228,4 +239,145 @@ service/joomla-service created
 
 # Запустить сервис и открыть в браузере страницу с Joomla
 minikube service joomla-service
+|-----------|----------------|-------------|---------------------------|
+| NAMESPACE |      NAME      | TARGET PORT |            URL            |
+|-----------|----------------|-------------|---------------------------|
+| default   | joomla-service |        8080 | http://192.168.49.2:30000 |
+|-----------|----------------|-------------|---------------------------|
 
+# Кластер Kubernetes (k8s) состоит из следующих стандартных "пространств имен" (Namespace):
+#   - default               - все ресурсы создаваемые в кластере хранятся здесь, 
+#                             если изначально не были созданны свои пространства имен.
+#   - kube-node-lease       - расширение k8s, которое содержит данные о состоянии 
+#                              и доступности узлов (nodes). Каждая нода имеет свой
+#                             ассоциированный выделенный объект в пространстве имен.
+#   - kube-public           - содержит общедоступные данные (accesible data), 
+#                             конфигурационную карту (configmap), которая содержит 
+#                             информацию о кластере без аутентификации
+#                             kubectl cluster-info
+#   - kube-system           - системные процессы, процессы Мастер-ноды и kubectl
+#   - kubernetes-dashboard  - автоматически предоставляется ТОЛЬКО в minikube
+#  ┌──────────────────────────────Kubernetes Cluster─────────────────────────────┐
+#  │                                                                             │
+#  │  ┌──kube-system──┐ ┌──kube-public──┐ ┌─kube-node-lease─┐ ┌────default────┐  │
+#  │  │               │ │               │ │                 │ │               │  │
+#  │  │               │ │               │ │                 │ │               │  │
+#  │  │               │ │               │ │                 │ │               │  │
+#  │  └───────────────┘ └───────────────┘ └─────────────────┘ └───────────────┘  │
+#  └─────────────────────────────────────────────────────────────────────────────┘
+#
+#   Namespace - можно представить как виртуальный кластер внутри кластера Kubernetes.
+#   Пространство имен можно указать в файле конфигурации yaml для POD-а:
+#    kind: Pod
+#    metadata:
+#    name: mypod
+#    namespace: test
+#    labels:
+#        name: mypod
+#   либо создать отдельный файл конфигурации пространства имен с типом kind: Namespace
+#   Можно создать собственные пространства имен с помощью комманды:
+#   kubectl create namespace <namespace-name>
+
+# Компонента k8s - "Вход" (Ingres) служит для обеспечения доступа к приложению в 
+# кластере k8s по доменному имени и протоколу https (продакшин вариант) вместо IP
+# адреса и номера порта по протоколу http для быстрого запуска, тестирования и отладки.
+# Для Входа (Ingres) можна создать также отдельный конфигурационный файл с типом kind: Ingres.
+#        kind: Ingress
+#        metadata:
+#            name: myapp-ingress
+#        spec:
+#            rules:
+#            # URL-хоста по которому происходит обращение из браузера к приоложению
+#            - host: myapp.com
+#            # протокол входящего запроса к внутренней службе (myapp-internal-service)
+#            http:
+#                # Часть URL-адреса после имени хоста (http://myapp.com/) - PATH, может
+#                # быть определена в данном блоке
+#                paths:
+#                - backend:
+#                    # Все запросы к хосту myapp.com должны быть перенаправленны в данную
+#                    # внутреннюю службу
+#                    serviceName: myapp-internal-service
+#                    servicePort: 8080
+#   Для обработки правил маршрутизации входящих запросов необходимо внедрить "Входящий контроллер"
+#   (Ingress Controller), который представляет собой один или несколько POD-ов внутри k8s кластера.
+#   Схема обработки входящего запроса (от точки входа до MyApp POD):
+#
+#   MyApp POD <= MyApp Service <= MyApp Ingress <= Ingress Controller POD (точка входа)
+#
+# Установка дополнения minikube - "входящего контроллера" (Ingress Controller) реализованного на nginx:
+minikube addons enable ingress
+# Вывод:
+▪ Используется образ k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+▪ Используется образ k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+▪ Используется образ k8s.gcr.io/ingress-nginx/controller:v1.1.0
+Verifying ingress addon...
+The 'ingress' addon is enabled
+# Список доступных пространств имён. Видим новосозданное новое пространство имен:
+kubectl get ns
+NAME                   STATUS   AGE
+default                Active   3d
+ingress-nginx          Active   11m
+kube-node-lease        Active   3d
+kube-public            Active   3d
+kube-system            Active   3d
+kubernetes-dashboard   Active   3d
+# Выводим список POD-ов в пространстве имен ingress-nginx, что бы удостовериться, 
+# что "входящий контроллер" запущен и работает:
+kubectl get pod -n ingress-nginx
+
+# Создание "входящих правил" для kubernetes-dashboard:
+kubectl apply -f dashboard-ingress.yaml
+ingress.networking.k8s.io/dashboard-ingress created
+# Вывод входящих контроллеров (Ingress) в пространстве имен kubernetes-dashboard:
+kubectl get ingress -n kubernetes-dashboard
+NAME                CLASS   HOSTS             ADDRESS     PORTS   AGE
+dashboard-ingress   nginx   dashboard.local   localhost   80      3m15s
+# Что бы определить что за адрес localhost для minikube (нашего кластера), выполним комманду:
+minikube ip
+192.168.49.2
+# Данный IP адрес вносим в файл /etc/hosts для сопоставления URL dashboard.local с localhost кластера:
+192.168.49.2       dashboard.local
+# Теперь введя в браузере URL dashboard.local - откроется панель Kubernetes Dashboard.
+
+
+# Разделы Кубернейтс (Kubernetes Volumes) бывают трёх типов:
+#       - Постоянный раздел (Persistent Volume, PV)
+#               ресурс кластера, создается с помощью YAML файла:
+#                  kind: PersistentVolume
+#                  metadata:
+#                     name: pv-name
+#                  spec:
+#                     capacity:
+#                          storage: 5Gi
+#                          lumeMode: Filesystem
+#                     accessMode:
+#                        - ReadWriteOnce
+#                     persistentVolumeReclaimPolicy: Recycle
+#                     storageClassName: slow
+#                     mountOptions:
+#                       - hard
+#                       - nfsvers=4.0
+#                     nfs:
+#                       path: /dir/path/on/nfs/server/
+#                       server: <nfs-server-ip-address>
+#               Где физически расположен раздел (на локальном диске, на NFS сервере или в облаке), его
+#               состояние, обслуживание и резервное копирование зависит от используемого модуля/плагина
+#               хранилища. Доступны для всего кластера, не относятся ни к одному пространству имен.
+#               Рекомендуется всегда использовать удаленное хранилище (NFS, Cloud) для хранения БД.
+#       - Постоянный раздел по требованию (Persistent Volume Claim, PVC)
+#               Настраивается в YAML файле, где приложение заявляет о необходимости использования хранилища
+#               (Persistent Volume Claim) с определенными характеристиками:
+#                       apiVersion: v1
+#                       kind: PersistentVolumeClaim
+#                       metadata:
+#                          name: pvc-name
+#                       spec:
+#                          storageClassName: manual
+#                          volumeMode: Filesystem
+#                          accessModes:
+#                             - ReadWriteOnce
+#                          resources:
+#                             requests:
+#                               storage: 10Gi
+#       - Класс хранилища (Storage Class, SC)
