@@ -1,3 +1,31 @@
+# MySQL configmap YAML-file
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  # по данному имени хоста (mysql-service) выполняется подключение к БД MySQL внутри POD-а
+  database_url: mysql-service
+
+---
+
+# MySQL secret YAML-file
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+# Тип секрета
+# https://kubernetes.io/docs/concepts/configuration/secret/#secret-types
+type: Opaque
+data:
+  mysql-root-pass: cGFzcw==
+  mysql-user-name: am9vbWxh
+  mysql-user-pass: am9vbWxh
+  mysql-db-name: am9vbWxhLWRi
+
+---
+
+# MySQL deployment YAML-file
 apiVersion: apps/v1
 # What will be doing? Deployment
 kind: Deployment
@@ -13,7 +41,7 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  ### Blueprint for the PODS
+  ### Blueprint for the POD
   template:
     metadata:
       labels:
@@ -59,7 +87,8 @@ spec:
   ### END Blueprint
 
 ---
-# Блок описания сервиса (service)
+
+# MySQL service YAML-file
 apiVersion: v1
 kind: Service
 metadata:
@@ -67,6 +96,7 @@ metadata:
 spec:
   selector:
     app: mysql
+  type: NodePort
   ports:
   - protocol: TCP
     # порт сервиса в кластере по которому другие сервисы (приложения) 
@@ -75,4 +105,4 @@ spec:
     # Порт контейнера по которому приложение внутри контейнера 
     # принимает запросы из вне
     targetPort: 3306
-
+    nodePort: 30306

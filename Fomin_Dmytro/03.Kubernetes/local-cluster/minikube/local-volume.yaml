@@ -47,7 +47,20 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   # Путь к директории хранилища на локальном хосте
   local:
-    path: "/home/fomindn/devops/DevOps-CC21/Fomin_Dmytro/03.Kubernetes/local_cluster/volume"
+    # ВАЖНО!!! Версия локальная версия Kubernetes (k8s) - minikube создает сначала одноименную
+    # виртуальную машину (docker контейнер) и лишь затем создает в ней контейнеры. Поэтому path
+    # ссылается на путь ВНУТРИ ДАННОЙ ВИРТУАЛЬНОЙ МАШИНЫ (docker контейнер), а НЕ ЛОКАЛЬНОГО КОМПЬЮТЕРА!
+    # Что бы примонтировать определенную директорию локального ХОСТА к созданной minikube одноименной 
+    # ВИРТУАЛЬНОЙ МАШИНЕ, необходимо выполнить комманды:
+    #
+    # minikube start
+    # minikube mount <source_directory_on_local_HOST>:<target_directory_on_Virtual_Machine>
+    #
+    # После выполнения комманд, монтирование существует до тех пор, пока не будет завершен процесс 
+    # запущенный в терминале поселедней коммандой.
+    # source_directory: /home/fomindn/devops/DevOps-CC21/Fomin_Dmytro/03.Kubernetes/local_cluster/volume
+    # target_directory: /mnt/volume
+    path: "/mnt/volume"
   nodeAffinity:
     required:
       nodeSelectorTerms:

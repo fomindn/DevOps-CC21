@@ -12,6 +12,8 @@
 
 # Jenkins CLI file
 /Fomin_Dmytro/02.Jenkins/jenkins/jenkins-cli.jar
+/Fomin_Dmytro/03.Kubernetes/local-cluster/jenkins/jenkins-cli.jar
 
 # minikube Debian packet
 # minikube_latest_amd64.deb
+
