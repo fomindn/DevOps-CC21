@@ -18,8 +18,9 @@ pipeline {
     stage('Build images') {
       steps{
         script {
-          dockerJenkinsImg = docker.build("fomindn/jenkins:lts")
-          dockerNgrokImg = docker.build("fomindn/ngrok:lts")
+          dockerMysqlImg = docker.build("fomindn/mysql:5.7.36")
+          dockerPmaImg = docker.build("fomindn/pma:5.1.1")
+          dockerJoomlaImg = docker.build("fomindn/joomla:4.0.5")
         }
       }
     }
@@ -28,8 +29,9 @@ pipeline {
       steps{
         script {
           docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-            dockerJenkinsImg.push()
-            dockerNgrokImg.push()
+            dockerMysqlImg.push()
+            dockerPmaImg.push()
+            dockerJoomlaImg.push()
           }
         }
       }
@@ -39,8 +41,10 @@ pipeline {
       steps {
 
           withCredentials([file(credentialsId: 'minikube', variable: 'MINIKUBE-CONFIG')]) {
-            sh 'kubectl apply -f jenkins.yaml'
-            sh 'kubectl apply -f ngrok.yaml'
+            sh 'kubectl apply -f ../minikube/local-volume.yaml'
+            sh 'kubectl apply -f mysql.yaml'
+            sh 'kubectl apply -f pma.yaml'
+            sh 'kubectl apply -f joomla.yaml'
         }
       }
     }
