@@ -19,20 +19,20 @@ resource "aws_subnet" "private_1" {
   vpc_id = aws_vpc.main.id
 
   # The CIDR block for the subnet
-  cidr_block = "192.168.128.0/18"
+  cidr_block = var.private-subnet-cidr[0]
 
   # The AZ (Availability Zone) for the subnet
-  availability_zone = "eu-central-1a"
+  availability_zone = var.availability-zones[0]
 
   # A map of tags to assign to the resource.
   tags = {
-    Name = "private-eu-central-1a"
+    Name = "private-${var.availability-zones[0]}"
     # Tag all public and private subnets that your cluster uses for load balancer resources with 
     # the following key-value pair:
     #   Key: kubernetes.io/cluster/cluster-name
     #   Value: shared
     # The shared value allows more than one cluster to use the subnet.
-    "kubernetes.io/cluster/eks" = "shared"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     # Allow the ALB (Application Load Balancer) Ingress Controller 
     # to create a load balancer using auto-discovery.
     # Set to 1 or empty tag value for internal load balancers.
@@ -48,16 +48,16 @@ resource "aws_subnet" "private_2" {
   vpc_id = aws_vpc.main.id
 
   # The CIDR block for the subnet
-  cidr_block = "192.168.192.0/18"
+  cidr_block = var.private-subnet-cidr[1]
 
   # The AZ (Availability Zone) for the subnet
-  availability_zone = "eu-central-1b"
+  availability_zone = var.availability-zones[1]
 
   # A map of tags to assign to the resource.
   tags = {
-    Name                              = "private-eu-central-1b"
-    "kubernetes.io/cluster/eks"       = "shared"
-    "kubernetes.io/role/internal-elb" = 1
+    Name                                        = "private-${var.availability-zones[1]}"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"           = 1
   }
 
 }

@@ -18,25 +18,39 @@
 # automatically update, or terminate nodes for your cluster with a single operation.
 #
 # Create IAM role for EKS Node Group
-resource "aws_iam_role" "nodes_general" {
-    # The name of the role
-    name = "eks-node-group-general"
+resource "aws_iam_role" "private-nodes" {
+  # The name of the role
+  name = "eks-private-node-group"
 
-    # The policy that grants an entity permission to assume the role.
-    assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      }, 
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-POLICY
+  # The policy that grants an entity permission to assume the role.
+  # Here uses Terraform's built-in function of the JSON encoder to 
+  # convert this object to json.
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+      Version = "2012-10-17"
+    }]
+  })
+
+  # Full JSON equivalent of the above-created object
+  #   assume_role_policy = <<POLICY
+  # {
+  #   "Version": "2012-10-17",
+  #   "Statement": [
+  #     {
+  #       "Effect": "Allow",
+  #       "Principal": {
+  #         "Service": "ec2.amazonaws.com"
+  #       }, 
+  #       "Action": "sts:AssumeRole"
+  #     }
+  #   ]
+  # }
+  # POLICY
 }
 
 
@@ -58,16 +72,14 @@ POLICY
 # This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
 # Policy ARN:   arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
 #
-resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy_general" {
-    # The ARN of the policy you want to apply.
-    # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEKSWorkerNodePolicy
-    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+resource "aws_iam_role_policy_attachment" "amazon_eks_worker_private_node_policy" {
+  # The ARN of the policy you want to apply.
+  # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEKSWorkerNodePolicy
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 
-    # The role the policy should be applied to
-    role = aws_iam_role.nodes_general.name
+  # The role the policy should be applied to
+  role = aws_iam_role.private-nodes.name
 }
-
-
 
 
 
@@ -81,13 +93,13 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy_general
 # Elastic Network Interfaces on your behalf. More information on the AWS VPC CNI Plugin is available here: 
 #       https://github.com/aws/amazon-vpc-cni-k8s
 #
-resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy_general" {
-    # The ARN of the policy you want to apply.
-    # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEKS_CNI_Policy
-    policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+resource "aws_iam_role_policy_attachment" "amazon_eks_cni_private_node_policy" {
+  # The ARN of the policy you want to apply.
+  # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEKS_CNI_Policy
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 
-    # The role the policy should be applied to
-    role = aws_iam_role.nodes_general.name
+  # The role the policy should be applied to
+  role = aws_iam_role.private-nodes.name
 }
 
 
@@ -96,10 +108,10 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy_general" {
 # Provides read-only access to Amazon EC2 Container Registry repositories.
 # Policy ARN:   arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
-    # The ARN of the policy you want to apply.
-    # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEC2ContainerRegistryReadOnly
-    policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  # The ARN of the policy you want to apply.
+  # https://github.com/z0ph/MAMIP/blob/master/policies/AmazonEC2ContainerRegistryReadOnly
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 
-    # The role the policy should be applied to
-    role = aws_iam_role.nodes_general.name
+  # The role the policy should be applied to
+  role = aws_iam_role.private-nodes.name
 }

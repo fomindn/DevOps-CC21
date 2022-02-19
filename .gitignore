@@ -19,6 +19,9 @@
 
 # Ignore files in "04.Terraform" directory of project
 
+# temporary *-output files
+/Fomin_Dmytro/04.Terraform/aws-eks-cluster/*-output
+
 # Local .terraform directories
 **/.terraform/*
 
