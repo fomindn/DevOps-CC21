@@ -13,7 +13,7 @@ resource "aws_nat_gateway" "gw1" {
     Name = "NAT 1"
   }
 
-  depends_on = [ aws_internet_gateway.igw ]
+  depends_on = [aws_internet_gateway.igw]
 }
 
 resource "aws_nat_gateway" "gw2" {
@@ -28,5 +28,5 @@ resource "aws_nat_gateway" "gw2" {
     Name = "NAT 2"
   }
 
-  depends_on = [ aws_internet_gateway.igw ]
+  depends_on = [aws_internet_gateway.igw]
 }

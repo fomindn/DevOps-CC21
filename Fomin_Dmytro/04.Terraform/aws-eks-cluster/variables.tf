@@ -45,19 +45,19 @@ variable "public-subnet-cidr" {
 
 variable "private-nodes-desired-capacity" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling Desired node capacity"
 }
 
 variable "private-nodes-max-size" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling maximum node capacity"
 }
 
 variable "private-nodes-min-size" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling Minimum node capacity"
 }
 
@@ -69,19 +69,19 @@ variable "private-nodes-instance-type" {
 
 variable "public-nodes-desired-capacity" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling Desired node capacity"
 }
 
 variable "public-nodes-max-size" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling maximum node capacity"
 }
 
 variable "public-nodes-min-size" {
   default     = 1
-  type        = string
+  type        = number
   description = "Autoscaling Minimum node capacity"
 }
 
