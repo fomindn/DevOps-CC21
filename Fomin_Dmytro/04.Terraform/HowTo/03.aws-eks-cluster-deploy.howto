@@ -10,10 +10,10 @@ aws configure --profile default
 # Создание внутреннего хранилища (dedicated bucket) для файла tfstate в AWS S3
 # Имя хранилища должно быть уникальным в пределах AWS S3
 # aws s3 mb s3://<dedicated-bucket-name> --region <region_code>
-aws s3 mb s3://cluster-tfstate-bucket --region eu-central-1
+aws s3 mb s3://store-tfstate --region eu-central-1
 
 # Активация ведения версий для созданного хранилища
-aws s3api put-bucket-versioning --bucket cluster-tfstate-bucket --versioning-configuration Status=Enabled
+aws s3api put-bucket-versioning --bucket store-tfstate --versioning-configuration Status=Enabled
 
 # Проверка корректности конфигурационных файлов Terraform
 terraform fmt
@@ -52,7 +52,7 @@ kubectl get svc
 kubectl get ns
 
 # Развертывание панели управления Kubernetes Dashboard:
-# ------ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.5/aio/deploy/recommended.yaml
 
 # Подключение к MySQL в AWS RDS:
 # mysql -h $(terraform output -raw rds_hostname) -u $(terraform output -raw rds_username) -p $(terraform output -raw rds_port)  db_name
@@ -61,9 +61,9 @@ kubectl get ns
 terraform destroy -auto-approve
 
 # Удаление S3 хранилища
-aws s3 rm s3://cluster-tfstate-bucket --recursive
-aws s3api put-bucket-versioning --bucket cluster-tfstate-bucket --versioning-configuration Status=Suspended
-aws s3api delete-objects --bucket terra-state-bucket \
-    --delete "$(aws s3api list-object-versions --bucket cluster-tfstate-bucket | \
+aws s3 rm s3://store-tfstate --recursive
+aws s3api put-bucket-versioning --bucket store-tfstate --versioning-configuration Status=Suspended
+aws s3api delete-objects --bucket store-tfstate \
+    --delete "$(aws s3api list-object-versions --bucket store-tfstate | \
                 jq '{Objects: [.Versions[] | {Key:.Key, VersionId : .VersionId}], Quiet: false}')"
-aws s3 rb s3://cluster-tfstate-bucket --force
+aws s3 rb s3://store-tfstate --force

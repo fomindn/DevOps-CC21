@@ -90,3 +90,9 @@ variable "public-nodes-instance-type" {
   type        = string
   description = "Worker Node EC2 instance type"
 }
+
+variable "s3_bucket_name" {
+  description = "The name of S3 Bucket"
+  type        = string
+  default     = "store-tfstate"
+}

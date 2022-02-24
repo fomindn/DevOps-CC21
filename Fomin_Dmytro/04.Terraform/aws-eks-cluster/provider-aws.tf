@@ -19,7 +19,3 @@ provider "aws" {
     }
   }
 }
-
-locals {
-  cluster-name = "${var.cluster_name}-${random_string.suffix.result}"
-}

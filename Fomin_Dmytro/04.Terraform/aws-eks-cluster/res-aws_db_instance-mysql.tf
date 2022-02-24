@@ -3,32 +3,32 @@
 # the cloud. A DB instance can contain multiple user-created databases.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance
 
-resource "aws_db_instance" "mysql" {
-  # Engine options
-  engine         = "mysql"
-  engine_version = "5.7"
+# resource "aws_db_instance" "mysql" {
+#   # Engine options
+#   engine         = "mysql"
+#   engine_version = "5.7"
 
-  # Settings
-  db_name    = "joomla-db"
-  identifier = "joomla-db"
+#   # Settings
+#   db_name    = "joomla-db"
+#   identifier = "joomla-db"
 
-  # Credentials Settings
-  username = "foo"
-  password = "foobarbaz"
+#   # Credentials Settings
+#   username = "foo"
+#   password = "foobarbaz"
 
-  # DB instance size
-  instance_class = "db.t2.micro"
+#   # DB instance size
+#   instance_class = "db.t2.micro"
 
-  # Storage
-  storage_type          = "gp2"
-  allocated_storage     = 1
-  max_allocated_storage = 5
+#   # Storage
+#   storage_type          = "gp2"
+#   allocated_storage     = 1
+#   max_allocated_storage = 5
 
-  # Encryption
-  storage_encrypted = true
+#   # Encryption
+#   storage_encrypted = true
 
-  # Availability & durability
-  multi_az = true
+#   # Availability & durability
+#   multi_az = true
 
   # Connectivity
   # db_subnet_group_name        = aws_db_subnet_group.sg.id
@@ -38,7 +38,7 @@ resource "aws_db_instance" "mysql" {
   # port                        = var.rds_port
 
   # Additional configuration
-  parameter_group_name = "default.mysql5.7"
+    # parameter_group_name = "default.mysql5.7"
 
   # Maintenance
   # auto_minor_version_upgrade  = true
@@ -58,4 +58,4 @@ resource "aws_db_instance" "mysql" {
   # tags = {
   #     Name = ""
   # }
-}
+# }
