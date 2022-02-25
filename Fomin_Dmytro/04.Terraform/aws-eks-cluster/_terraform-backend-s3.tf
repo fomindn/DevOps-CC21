@@ -10,11 +10,12 @@
 # # Terraform backend. S3 bucket with dynamodb 
 # terraform {
 #   backend "s3" {
+#     profile        = "default"
 #     bucket         = "store-tfstate"
-#     key            = "terraform.tfstate"
-#     region         = "eu-central-1"
 #     encrypt        = true
+#     key            = "AWS/DevOps-cc-21/tf-state/terraform.tfstate"
+#     region         = "eu-central-1"
 #     kms_key_id     = "alias/s3-tfstate-key"
-#     dynamodb_table = "tfstate_lock"
+#     dynamodb_table = "tfstate-lock"
 #   }
 # }

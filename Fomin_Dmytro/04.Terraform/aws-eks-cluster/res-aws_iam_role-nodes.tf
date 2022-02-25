@@ -20,36 +20,36 @@
 # Create IAM role for EKS Node Group
 resource "aws_iam_role" "nodes" {
   # The name of the role
-  name = "eks-node-group-nodes"
+  name = "${local.cluster-name}-node-group-nodes"
 
   # The policy that grants an entity permission to assume the role.
   # Here uses Terraform's built-in function of the JSON encoder to 
   # convert this object to json.
-  # assume_role_policy = jsonencode({
-  #   Statement = [{
-  #     Action = "sts:AssumeRole"
-  #     Effect = "Allow"
-  #     Principal = {
-  #       Service = "ec2.amazonaws.com"
-  #     }
-  #     Version = "2012-10-17"
-  #   }]
-  # })
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+      Version = "2012-10-17"
+    }]
+  })
 
   # Full JSON equivalent of the above-created object
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      }, 
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-POLICY
+  #   assume_role_policy = <<POLICY
+  # {
+  #   "Version": "2012-10-17",
+  #   "Statement": [
+  #     {
+  #       "Effect": "Allow",
+  #       "Principal": {
+  #         "Service": "ec2.amazonaws.com"
+  #       }, 
+  #       "Action": "sts:AssumeRole"
+  #     }
+  #   ]
+  # }
+  # POLICY
 
 }

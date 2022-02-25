@@ -14,8 +14,8 @@ provider "aws" {
   default_tags {
     tags = {
       owner        = "Dmytro Fomin"
-      cluster_name = "${local.cluster-name}"
+      cluster-name = "${local.cluster-name}"
       env          = "DevOps-CC21"
-    }
+    } 
   }
 }

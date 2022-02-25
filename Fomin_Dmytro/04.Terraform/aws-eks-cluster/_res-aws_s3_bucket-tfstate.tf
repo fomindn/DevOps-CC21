@@ -3,10 +3,10 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 
 # resource "aws_s3_bucket" "tfstate" {
-#   bucket = var.s3_bucket_name
+#   bucket = var.s3-bucket-name
 
 #   tags = {
-#     Name = "s3_bucket_tfstate"
+#     Name = var.s3-bucket-name
 #     env  = "DevOps-CC21"
 #   }
 # }
